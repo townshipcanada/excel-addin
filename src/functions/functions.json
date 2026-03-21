@@ -1,0 +1,69 @@
+{
+  "allowCustomDataForDataTypeAny": true,
+  "functions": [
+    {
+      "description": "Convert a Canadian legal land description to GPS coordinates. Returns \"latitude, longitude\".",
+      "helpUrl": "https://townshipcanada.com/integrations/excel",
+      "id": "CONVERT",
+      "name": "CONVERT",
+      "parameters": [
+        {
+          "description": "Legal land description (e.g., \"NW-25-24-1-W5\", \"093G/14\")",
+          "name": "lld",
+          "type": "string"
+        }
+      ],
+      "result": {
+        "type": "string"
+      }
+    },
+    {
+      "description": "Convert a legal land description and return only the latitude.",
+      "helpUrl": "https://townshipcanada.com/integrations/excel",
+      "id": "LAT",
+      "name": "LAT",
+      "parameters": [
+        {
+          "description": "Legal land description (e.g., \"NW-25-24-1-W5\")",
+          "name": "lld",
+          "type": "string"
+        }
+      ],
+      "result": {
+        "type": "number"
+      }
+    },
+    {
+      "description": "Convert a legal land description and return only the longitude.",
+      "helpUrl": "https://townshipcanada.com/integrations/excel",
+      "id": "LNG",
+      "name": "LNG",
+      "parameters": [
+        {
+          "description": "Legal land description (e.g., \"NW-25-24-1-W5\")",
+          "name": "lld",
+          "type": "string"
+        }
+      ],
+      "result": {
+        "type": "number"
+      }
+    },
+    {
+      "description": "Convert a legal land description and return the province name.",
+      "helpUrl": "https://townshipcanada.com/integrations/excel",
+      "id": "PROVINCE",
+      "name": "PROVINCE",
+      "parameters": [
+        {
+          "description": "Legal land description (e.g., \"NW-25-24-1-W5\")",
+          "name": "lld",
+          "type": "string"
+        }
+      ],
+      "result": {
+        "type": "string"
+      }
+    }
+  ]
+}
