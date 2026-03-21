@@ -9,7 +9,7 @@
     <title>Township Canada</title>
     <link
       rel="stylesheet"
-      href="./taskpane.css"
+      href="/src/taskpane/taskpane.css"
     />
   </head>
   <body>
@@ -194,9 +194,7 @@
       class="tab-content"
     >
       <div class="section-title">API Key</div>
-      <p class="help-text">
-        Connect a trial or paid API key to convert legal land descriptions.
-      </p>
+      <p class="help-text">Connect a trial or paid API key to convert legal land descriptions.</p>
 
       <div
         id="statusBadge"
@@ -278,6 +276,9 @@
     </div>
 
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
-    <script src="./taskpane.js"></script>
+    <script
+      type="module"
+      src="/src/taskpane/taskpane.js"
+    ></script>
   </body>
 </html>
