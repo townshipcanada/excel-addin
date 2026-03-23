@@ -83,5 +83,7 @@ async function convertSelectedCells(event) {
   event.completed();
 }
 
-// Register the command function
-Office.actions.associate("convertSelectedCells", convertSelectedCells);
+// Register the command function inside Office.onReady
+Office.onReady(function () {
+  Office.actions.associate("convertSelectedCells", convertSelectedCells);
+});

@@ -21,23 +21,37 @@ var STORAGE_KEY_API_KEY = "township_api_key";
 
 /**
  * Get the stored API key (trial or paid).
+ * Returns empty string if localStorage is unavailable.
  */
 export function getApiKey() {
-  return localStorage.getItem(STORAGE_KEY_API_KEY) || "";
+  try {
+    return localStorage.getItem(STORAGE_KEY_API_KEY) || "";
+  } catch (e) {
+    console.warn("Township Canada: Unable to read API key from storage.", e.message);
+    return "";
+  }
 }
 
 /**
  * Save an API key to localStorage.
  */
 export function setApiKey(key) {
-  localStorage.setItem(STORAGE_KEY_API_KEY, key.trim());
+  try {
+    localStorage.setItem(STORAGE_KEY_API_KEY, key.trim());
+  } catch (e) {
+    console.warn("Township Canada: Unable to save API key to storage.", e.message);
+  }
 }
 
 /**
  * Remove the stored API key.
  */
 export function removeApiKey() {
-  localStorage.removeItem(STORAGE_KEY_API_KEY);
+  try {
+    localStorage.removeItem(STORAGE_KEY_API_KEY);
+  } catch (e) {
+    console.warn("Township Canada: Unable to remove API key from storage.", e.message);
+  }
 }
 
 /**
@@ -104,8 +118,19 @@ function extractFromFeatureCollection(fc) {
 }
 
 /**
+ * Safely parse a JSON response body, throwing a clear error on failure.
+ */
+async function safeParseJson(response) {
+  try {
+    return await response.json();
+  } catch (e) {
+    throw new Error("Invalid response from API (unable to parse JSON)");
+  }
+}
+
+/**
  * Convert a single legal land description via the API.
- * Uses GET /search/legal-location — same contract for trial and paid keys.
+ * Uses GET /search/legal-location -- same contract for trial and paid keys.
  */
 export async function apiConvertSingle(query) {
   if (!hasApiKey()) {
@@ -127,17 +152,17 @@ export async function apiConvertSingle(query) {
     throw new Error("TRIAL_LIMIT_REACHED");
   }
   if (!response.ok) {
-    var errorBody = await response.json();
+    var errorBody = await safeParseJson(response);
     throw new Error(errorBody.message || "API request failed");
   }
 
-  var body = await response.json();
+  var body = await safeParseJson(response);
   return extractFromFeatureCollection(body);
 }
 
 /**
  * Convert a batch of legal land descriptions via the API.
- * Uses POST /batch/legal-location — same contract for trial and paid keys.
+ * Uses POST /batch/legal-location -- same contract for trial and paid keys.
  */
 export async function apiConvertBatch(queries) {
   if (!hasApiKey()) {
@@ -147,7 +172,7 @@ export async function apiConvertBatch(queries) {
   var response = await fetch(getApiBaseUrl() + "/batch/legal-location", {
     method: "POST",
     headers: buildHeaders(),
-    body: JSON.stringify(queries)
+    body: JSON.stringify({ locations: queries })
   });
 
   if (response.status === 401) {
@@ -160,11 +185,11 @@ export async function apiConvertBatch(queries) {
     throw new Error("TRIAL_LIMIT_REACHED");
   }
   if (!response.ok) {
-    var errorBody = await response.json();
+    var errorBody = await safeParseJson(response);
     throw new Error(errorBody.message || "Batch API request failed");
   }
 
-  return await response.json();
+  return await safeParseJson(response);
 }
 
 /**
@@ -190,7 +215,7 @@ export async function apiGetUsage() {
       return { plan: "none", apiKeyValid: false };
     }
 
-    return (await response.json()).data;
+    return (await safeParseJson(response)).data;
   } catch (e) {
     return { plan: "none", apiKeyValid: false };
   }

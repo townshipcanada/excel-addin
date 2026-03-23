@@ -13,6 +13,8 @@
     "sideload": "office-addin-dev-certs install && office-addin-debugging start manifest.xml desktop"
   },
   "devDependencies": {
+    "office-addin-debugging": "^5.1.7",
+    "office-addin-dev-certs": "^1.13.7",
     "vite": "^6.2.0",
     "vite-plugin-static-copy": "^3.3.0"
   },

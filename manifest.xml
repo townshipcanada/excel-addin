@@ -134,7 +134,7 @@
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://townshipcanada.com/integrations/excel" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="Functions.Namespace" DefaultValue="TOWNSHIP" />
+        <bt:String id="Functions.Namespace" DefaultValue="TOWNSHIP_CANADA" />
         <bt:String id="TownshipTab.Label" DefaultValue="Township Canada" />
         <bt:String id="CommandsGroup.Label" DefaultValue="Land Descriptions" />
         <bt:String id="TaskpaneButton.Label" DefaultValue="Open Sidebar" />
@@ -144,7 +144,7 @@
       <bt:LongStrings>
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Open the Township Canada sidebar for batch conversion and settings." />
         <bt:String id="ConvertSelected.Tooltip" DefaultValue="Convert the selected cells containing legal land descriptions to GPS coordinates." />
-        <bt:String id="GetStarted.Description" DefaultValue="Convert Canadian legal land descriptions to GPS coordinates. Use custom functions like =TOWNSHIP.CONVERT() or batch-convert with the sidebar." />
+        <bt:String id="GetStarted.Description" DefaultValue="Convert Canadian legal land descriptions to GPS coordinates. Use custom functions like =TOWNSHIP_CANADA.CONVERT() or batch-convert with the sidebar." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

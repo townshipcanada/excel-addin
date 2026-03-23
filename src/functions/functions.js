@@ -1,17 +1,36 @@
 /**
  * Township Canada Excel Add-In - Custom Functions
  *
- * Registered under the TOWNSHIP namespace:
- *   =TOWNSHIP.CONVERT("NW-25-24-1-W5")           -> "52.123456, -114.654321"
- *   =TOWNSHIP.LAT("NW-25-24-1-W5")               -> 52.123456
- *   =TOWNSHIP.LNG("NW-25-24-1-W5")               -> -114.654321
- *   =TOWNSHIP.PROVINCE("NW-25-24-1-W5")          -> "Alberta"
+ * Registered under the TOWNSHIP_CANADA namespace:
+ *   =TOWNSHIP_CANADA.CONVERT("NW-25-24-1-W5")    -> "52.123456, -114.654321"
+ *   =TOWNSHIP_CANADA.LAT("NW-25-24-1-W5")        -> 52.123456
+ *   =TOWNSHIP_CANADA.LNG("NW-25-24-1-W5")        -> -114.654321
+ *   =TOWNSHIP_CANADA.PROVINCE("NW-25-24-1-W5")   -> "Alberta"
  *
  * Requires a Township Canada API key (trial or paid).
  * Get a free trial key at: townshipcanada.com/api/try
  */
 
 import { apiConvertSingle } from "../shared/config";
+
+/**
+ * Shared error handler for all custom functions.
+ * Returns a user-friendly string for known API error codes.
+ */
+function handleFunctionError(e) {
+  switch (e.message) {
+    case "NO_API_KEY":
+      return "API key required";
+    case "INVALID_API_KEY":
+      return "Invalid API key";
+    case "TRIAL_EXPIRED":
+      return "Trial expired";
+    case "TRIAL_LIMIT_REACHED":
+      return "Trial limit reached";
+    default:
+      return "Error: " + e.message;
+  }
+}
 
 /**
  * Convert a Canadian legal land description to GPS coordinates.
@@ -36,19 +55,7 @@ async function convert(lld) {
     }
     return "Not found";
   } catch (e) {
-    if (e.message === "NO_API_KEY") {
-      return "API key required";
-    }
-    if (e.message === "TRIAL_EXPIRED") {
-      return "Trial expired";
-    }
-    if (e.message === "TRIAL_LIMIT_REACHED") {
-      return "Trial limit reached";
-    }
-    if (e.message === "INVALID_API_KEY") {
-      return "Invalid API key";
-    }
-    return "Error: " + e.message;
+    return handleFunctionError(e);
   }
 }
 
@@ -71,16 +78,7 @@ async function lat(lld) {
     }
     return "Not found";
   } catch (e) {
-    if (e.message === "NO_API_KEY") {
-      return "API key required";
-    }
-    if (e.message === "TRIAL_EXPIRED" || e.message === "TRIAL_LIMIT_REACHED") {
-      return "Trial ended";
-    }
-    if (e.message === "INVALID_API_KEY") {
-      return "Invalid API key";
-    }
-    return "Error: " + e.message;
+    return handleFunctionError(e);
   }
 }
 
@@ -103,16 +101,7 @@ async function lng(lld) {
     }
     return "Not found";
   } catch (e) {
-    if (e.message === "NO_API_KEY") {
-      return "API key required";
-    }
-    if (e.message === "TRIAL_EXPIRED" || e.message === "TRIAL_LIMIT_REACHED") {
-      return "Trial ended";
-    }
-    if (e.message === "INVALID_API_KEY") {
-      return "Invalid API key";
-    }
-    return "Error: " + e.message;
+    return handleFunctionError(e);
   }
 }
 
@@ -135,16 +124,7 @@ async function province(lld) {
     }
     return "Not found";
   } catch (e) {
-    if (e.message === "NO_API_KEY") {
-      return "API key required";
-    }
-    if (e.message === "TRIAL_EXPIRED" || e.message === "TRIAL_LIMIT_REACHED") {
-      return "Trial ended";
-    }
-    if (e.message === "INVALID_API_KEY") {
-      return "Invalid API key";
-    }
-    return "Error: " + e.message;
+    return handleFunctionError(e);
   }
 }
 
