@@ -14,12 +14,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - run: npm ci
+      - name: Build
+        run: npm run build
       - name: Validate manifest
-        run: |
-          if [ -f "package.json" ]; then
-            npm ci
-            npm run build --if-present
-            npm test --if-present
-          fi
-          echo "Manifest validation: checking manifest.xml exists"
-          test -f manifest.xml && echo "manifest.xml found" || echo "No manifest.xml"
+        run: npm run validate
