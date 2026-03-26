@@ -8,7 +8,7 @@
  *   =TOWNSHIP_CANADA.PROVINCE("NW-25-24-1-W5")   -> "Alberta"
  *
  * 100 sample locations work offline without an API key.
- * For full access, get a key at: townshipcanada.com/api/try
+ * For full access, get a key at: townshipcanada.com/api
  */
 
 import { apiConvertSingle } from "../shared/config";

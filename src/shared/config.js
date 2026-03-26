@@ -5,7 +5,7 @@
  * used across custom functions, commands, and the task pane.
  *
  * Requires a trial or paid API key. Trial keys can be obtained at:
- * https://townshipcanada.com/api/try?ref=excel
+ * https://townshipcanada.com/api?ref=excel
  *
  * Both trial and paid keys use the same API contract (GeoJSON).
  * Trial keys (tc_trial_...) route to the integration trial endpoint;
@@ -19,7 +19,7 @@ import { lookupSampleData } from "./sampleData";
 export var TRIAL_API_BASE_URL = "https://townshipcanada.com/api/integrations/trial";
 export var PAID_API_BASE_URL = "https://developer.townshipcanada.com";
 export var MAX_BATCH_SIZE = 200;
-export var TRIAL_URL = "https://townshipcanada.com/api/try?ref=excel";
+export var TRIAL_URL = "https://townshipcanada.com/api?ref=excel";
 
 var STORAGE_KEY_API_KEY = "township_api_key";
 

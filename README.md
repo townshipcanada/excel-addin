@@ -7,7 +7,8 @@ Microsoft Excel Add-In for converting Canadian legal land descriptions (DLS, NTS
 - **Custom Functions**: Use `=TOWNSHIP_CANADA.CONVERT()`, `=TOWNSHIP_CANADA.LAT()`, `=TOWNSHIP_CANADA.LNG()`, `=TOWNSHIP_CANADA.PROVINCE()` in any cell
 - **Ribbon Button**: One-click batch conversion of selected cells
 - **Task Pane Sidebar**: Batch convert by selection or column, manage API key settings
-- **Trial Keys**: Free 7-day trial (100 calls) at [townshipcanada.com/api/try](https://townshipcanada.com/api/try?ref=excel), unlimited with paid API key
+- **Try Offline**: 100 sample DLS locations work instantly without an API key
+- **API Keys**: Get full access at [townshipcanada.com/api](https://townshipcanada.com/api?ref=excel)
 
 ## Custom Functions
 
