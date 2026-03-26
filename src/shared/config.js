@@ -5,17 +5,21 @@
  * used across custom functions, commands, and the task pane.
  *
  * Requires a trial or paid API key. Trial keys can be obtained at:
- * https://townshipcanada.com/api/try?ref=excel
+ * https://townshipcanada.com/api?ref=excel
  *
  * Both trial and paid keys use the same API contract (GeoJSON).
  * Trial keys (tc_trial_...) route to the integration trial endpoint;
  * paid keys route to developer.townshipcanada.com.
+ *
+ * For offline demo, sample data is checked first (no API key needed).
  */
+
+import { lookupSampleData } from "./sampleData";
 
 export var TRIAL_API_BASE_URL = "https://townshipcanada.com/api/integrations/trial";
 export var PAID_API_BASE_URL = "https://developer.townshipcanada.com";
 export var MAX_BATCH_SIZE = 200;
-export var TRIAL_URL = "https://townshipcanada.com/api/try?ref=excel";
+export var TRIAL_URL = "https://townshipcanada.com/api?ref=excel";
 
 var STORAGE_KEY_API_KEY = "township_api_key";
 
@@ -130,9 +134,21 @@ async function safeParseJson(response) {
 
 /**
  * Convert a single legal land description via the API.
+ * Checks sample data first for offline demo, then falls back to API.
  * Uses GET /search/legal-location -- same contract for trial and paid keys.
  */
 export async function apiConvertSingle(query) {
+  // Check sample data first (works without an API key)
+  var sample = lookupSampleData(query);
+  if (sample) {
+    return {
+      latitude: sample.latitude,
+      longitude: sample.longitude,
+      legal_location: query,
+      province: sample.province
+    };
+  }
+
   if (!hasApiKey()) {
     throw new Error("NO_API_KEY");
   }
@@ -162,9 +178,35 @@ export async function apiConvertSingle(query) {
 
 /**
  * Convert a batch of legal land descriptions via the API.
+ * Checks sample data first for each query, then sends remaining to API.
  * Uses POST /batch/legal-location -- same contract for trial and paid keys.
  */
 export async function apiConvertBatch(queries) {
+  // Split queries into sample hits and API-needed
+  var results = [];
+  var apiQueries = [];
+  var apiIndices = [];
+
+  for (var i = 0; i < queries.length; i++) {
+    var sample = lookupSampleData(queries[i]);
+    if (sample) {
+      results[i] = {
+        latitude: sample.latitude,
+        longitude: sample.longitude,
+        legal_location: queries[i],
+        province: sample.province
+      };
+    } else {
+      apiQueries.push(queries[i]);
+      apiIndices.push(i);
+    }
+  }
+
+  // If all resolved from sample data, return immediately
+  if (apiQueries.length === 0) {
+    return { data: results };
+  }
+
   if (!hasApiKey()) {
     throw new Error("NO_API_KEY");
   }
@@ -172,7 +214,7 @@ export async function apiConvertBatch(queries) {
   var response = await fetch(getApiBaseUrl() + "/batch/legal-location", {
     method: "POST",
     headers: buildHeaders(),
-    body: JSON.stringify({ locations: queries })
+    body: JSON.stringify({ locations: apiQueries })
   });
 
   if (response.status === 401) {
@@ -189,7 +231,14 @@ export async function apiConvertBatch(queries) {
     throw new Error(errorBody.message || "Batch API request failed");
   }
 
-  return await safeParseJson(response);
+  var apiResponse = await safeParseJson(response);
+
+  // Merge API results back into the correct positions
+  for (var j = 0; j < apiIndices.length; j++) {
+    results[apiIndices[j]] = apiResponse.data[j];
+  }
+
+  return { data: results };
 }
 
 /**
