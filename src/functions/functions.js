@@ -7,8 +7,8 @@
  *   =TOWNSHIP_CANADA.LNG("NW-25-24-1-W5")        -> -114.654321
  *   =TOWNSHIP_CANADA.PROVINCE("NW-25-24-1-W5")   -> "Alberta"
  *
- * Requires a Township Canada API key (trial or paid).
- * Get a free trial key at: townshipcanada.com/api/try
+ * 100 sample locations work offline without an API key.
+ * For full access, get a key at: townshipcanada.com/api/try
  */
 
 import { apiConvertSingle } from "../shared/config";
