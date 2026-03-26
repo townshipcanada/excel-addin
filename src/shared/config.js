@@ -4,27 +4,20 @@
  * Single source of truth for API URL, storage keys, and common functions
  * used across custom functions, commands, and the task pane.
  *
- * Requires a trial or paid API key. Trial keys can be obtained at:
- * https://townshipcanada.com/api?ref=excel
+ * API keys can be obtained at: https://townshipcanada.com/api?ref=excel
  *
- * Both trial and paid keys use the same API contract (GeoJSON).
- * Trial keys (tc_trial_...) route to the integration trial endpoint;
- * paid keys route to developer.townshipcanada.com.
- *
- * For offline demo, sample data is checked first (no API key needed).
+ * For offline demo, 100 sample locations are checked first (no API key needed).
  */
 
 import { lookupSampleData } from "./sampleData";
 
-export var TRIAL_API_BASE_URL = "https://townshipcanada.com/api/integrations/trial";
-export var PAID_API_BASE_URL = "https://developer.townshipcanada.com";
+export var API_BASE_URL = "https://townshipcanada.com/api";
 export var MAX_BATCH_SIZE = 200;
-export var TRIAL_URL = "https://townshipcanada.com/api?ref=excel";
 
 var STORAGE_KEY_API_KEY = "township_api_key";
 
 /**
- * Get the stored API key (trial or paid).
+ * Get the stored API key.
  * Returns empty string if localStorage is unavailable.
  */
 export function getApiKey() {
@@ -66,18 +59,10 @@ export function hasApiKey() {
 }
 
 /**
- * Check if the stored API key is a trial key.
- * Trial keys use the prefix "tc_trial_".
- */
-export function isTrialKey() {
-  return getApiKey().indexOf("tc_trial_") === 0;
-}
-
-/**
- * Get the appropriate API base URL based on the key type.
+ * Get the API base URL.
  */
 export function getApiBaseUrl() {
-  return isTrialKey() ? TRIAL_API_BASE_URL : PAID_API_BASE_URL;
+  return API_BASE_URL;
 }
 
 /**
@@ -135,7 +120,6 @@ async function safeParseJson(response) {
 /**
  * Convert a single legal land description via the API.
  * Checks sample data first for offline demo, then falls back to API.
- * Uses GET /search/legal-location -- same contract for trial and paid keys.
  */
 export async function apiConvertSingle(query) {
   // Check sample data first (works without an API key)
@@ -161,11 +145,8 @@ export async function apiConvertSingle(query) {
   if (response.status === 401) {
     throw new Error("INVALID_API_KEY");
   }
-  if (response.status === 403) {
-    throw new Error("TRIAL_EXPIRED");
-  }
   if (response.status === 429) {
-    throw new Error("TRIAL_LIMIT_REACHED");
+    throw new Error("RATE_LIMIT_REACHED");
   }
   if (!response.ok) {
     var errorBody = await safeParseJson(response);
@@ -179,7 +160,6 @@ export async function apiConvertSingle(query) {
 /**
  * Convert a batch of legal land descriptions via the API.
  * Checks sample data first for each query, then sends remaining to API.
- * Uses POST /batch/legal-location -- same contract for trial and paid keys.
  */
 export async function apiConvertBatch(queries) {
   // Split queries into sample hits and API-needed
@@ -220,11 +200,8 @@ export async function apiConvertBatch(queries) {
   if (response.status === 401) {
     throw new Error("INVALID_API_KEY");
   }
-  if (response.status === 403) {
-    throw new Error("TRIAL_EXPIRED");
-  }
   if (response.status === 429) {
-    throw new Error("TRIAL_LIMIT_REACHED");
+    throw new Error("RATE_LIMIT_REACHED");
   }
   if (!response.ok) {
     var errorBody = await safeParseJson(response);
@@ -243,19 +220,14 @@ export async function apiConvertBatch(queries) {
 
 /**
  * Get current usage information for the connected API key.
- * Usage endpoint is only available for trial keys.
  */
 export async function apiGetUsage() {
   if (!hasApiKey()) {
     return { plan: "none", apiKeyValid: false };
   }
 
-  if (!isTrialKey()) {
-    return { plan: "api_key", apiKeyValid: true };
-  }
-
   try {
-    var response = await fetch(TRIAL_API_BASE_URL + "/usage", {
+    var response = await fetch(getApiBaseUrl() + "/usage", {
       method: "GET",
       headers: buildHeaders()
     });

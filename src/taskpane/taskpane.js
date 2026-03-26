@@ -3,13 +3,10 @@
  *
  * Handles batch conversion, settings/API key management,
  * and usage tracking for the task pane sidebar.
- *
- * Requires a trial or paid API key.
  */
 
 import {
   MAX_BATCH_SIZE,
-  TRIAL_URL,
   getApiKey,
   setApiKey,
   removeApiKey,
@@ -50,42 +47,31 @@ function updateUsageDisplay(usage) {
   var countEl = document.getElementById("usageCount");
   var progressEl = document.getElementById("usageProgress");
   var setupBanner = document.getElementById("setupBanner");
-  var trialInfo = document.getElementById("trialInfo");
   var usageLabel = document.getElementById("usageLabel");
 
   if (!usage.apiKeyValid) {
-    // No API key connected
     setupBanner.style.display = "block";
     usageBar.style.display = "none";
-    trialInfo.style.display = "none";
-  } else if (usage.plan === "trial") {
-    // Trial key
-    setupBanner.style.display = "none";
-    usageBar.style.display = "block";
-    usageLabel.textContent = "Trial Usage";
-    countEl.innerHTML = usage.used + "<span> / " + usage.limit + " calls</span>";
-    var pct = Math.min(100, (usage.used / usage.limit) * 100);
-    progressEl.style.width = pct + "%";
-
-    if (pct >= 100) {
-      progressEl.className = "progress-fill danger";
-    } else if (pct >= 70) {
-      progressEl.className = "progress-fill warning";
-    } else {
-      progressEl.className = "progress-fill";
-    }
-
-    trialInfo.style.display = "block";
-    trialInfo.textContent = usage.daysLeft + " days remaining on trial. Upgrade at townshipcanada.com/pricing for unlimited access.";
   } else {
-    // Paid key
     setupBanner.style.display = "none";
     usageBar.style.display = "block";
     usageLabel.textContent = "API Usage";
-    countEl.innerHTML = "Unlimited <span>(paid API key)</span>";
-    progressEl.className = "progress-fill unlimited";
-    progressEl.style.width = "100%";
-    trialInfo.style.display = "none";
+    if (usage.used != null && usage.limit != null) {
+      countEl.innerHTML = usage.used + "<span> / " + usage.limit + " calls</span>";
+      var pct = Math.min(100, (usage.used / usage.limit) * 100);
+      progressEl.style.width = pct + "%";
+      if (pct >= 100) {
+        progressEl.className = "progress-fill danger";
+      } else if (pct >= 70) {
+        progressEl.className = "progress-fill warning";
+      } else {
+        progressEl.className = "progress-fill";
+      }
+    } else {
+      countEl.innerHTML = "Connected <span>(API key)</span>";
+      progressEl.className = "progress-fill";
+      progressEl.style.width = "100%";
+    }
   }
 }
 
@@ -105,14 +91,12 @@ function columnLetterToIndex(letter) {
 
 function handleConversionError(e) {
   if (e.message === "NO_API_KEY") {
-    showStatus("API key required. Connect a trial or paid key in Settings.", "error");
+    showStatus("API key required. Add your API key in Settings.", "error");
     document.getElementById("setupBanner").style.display = "block";
-  } else if (e.message === "TRIAL_EXPIRED") {
-    showStatus("Trial key has expired. Upgrade at townshipcanada.com/pricing for continued access.", "error");
-  } else if (e.message === "TRIAL_LIMIT_REACHED") {
-    showStatus("Trial usage limit reached. Upgrade at townshipcanada.com/pricing for continued access.", "error");
   } else if (e.message === "INVALID_API_KEY") {
     showStatus("Invalid API key. Check your key in Settings.", "error");
+  } else if (e.message === "RATE_LIMIT_REACHED") {
+    showStatus("Rate limit reached. Please try again later.", "error");
   } else {
     showStatus(e.message || "Conversion failed", "error");
   }
@@ -324,11 +308,7 @@ async function checkCurrentKey() {
     document.getElementById("apiKeyInput").value = key;
     var usage = await apiGetUsage();
     if (usage.apiKeyValid) {
-      if (usage.plan === "trial") {
-        showTrial(usage);
-      } else {
-        showConnected();
-      }
+      showConnected();
     } else {
       showDisconnected();
       showSettingsMessage("Stored API key is invalid. Please update it.", "error");
@@ -354,13 +334,8 @@ async function saveKey() {
 
   var usage = await apiGetUsage();
   if (usage.apiKeyValid) {
-    if (usage.plan === "trial") {
-      showTrial(usage);
-      showSettingsMessage("Trial key connected! " + usage.remaining + " calls remaining.", "success");
-    } else {
-      showConnected();
-      showSettingsMessage("API key connected successfully!", "success");
-    }
+    showConnected();
+    showSettingsMessage("API key connected successfully!", "success");
     loadUsage();
   } else {
     showDisconnected();
@@ -381,15 +356,7 @@ function showConnected() {
   var badge = document.getElementById("statusBadge");
   badge.className = "status-badge connected";
   document.getElementById("statusDot").className = "status-dot green";
-  document.getElementById("statusText").textContent = "Connected (unlimited)";
-  document.getElementById("removeBtn").style.display = "inline-block";
-}
-
-function showTrial(usage) {
-  var badge = document.getElementById("statusBadge");
-  badge.className = "status-badge trial";
-  document.getElementById("statusDot").className = "status-dot blue";
-  document.getElementById("statusText").textContent = "Trial (" + usage.remaining + " calls, " + usage.daysLeft + " days left)";
+  document.getElementById("statusText").textContent = "Connected";
   document.getElementById("removeBtn").style.display = "inline-block";
 }
 

@@ -7,7 +7,7 @@
  *   =TOWNSHIP_CANADA.LNG("NW-25-24-1-W5")        -> -114.654321
  *   =TOWNSHIP_CANADA.PROVINCE("NW-25-24-1-W5")   -> "Alberta"
  *
- * 100 sample locations work offline without an API key.
+ * 100 sample locations work without an API key.
  * For full access, get a key at: townshipcanada.com/api
  */
 
@@ -23,10 +23,8 @@ function handleFunctionError(e) {
       return "API key required";
     case "INVALID_API_KEY":
       return "Invalid API key";
-    case "TRIAL_EXPIRED":
-      return "Trial expired";
-    case "TRIAL_LIMIT_REACHED":
-      return "Trial limit reached";
+    case "RATE_LIMIT_REACHED":
+      return "Rate limit reached";
     default:
       return "Error: " + e.message;
   }
