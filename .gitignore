@@ -4,3 +4,6 @@ dist/
 
 # Claude Code local settings (may contain tokens)
 .claude/settings.local.json
+
+# Editor plugin session state. Machine and session scoped, never shared.
+.omc/
