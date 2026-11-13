@@ -28,7 +28,7 @@ Microsoft Excel Add-In that converts Canadian legal land descriptions (township/
 
 ## Architecture Notes
 
-- API key auth: users provide a trial or paid API key via Settings tab
+- API key auth: users provide a paid API key via Settings tab
 - Offline demo: 100 sample DLS locations work without an API key (sampleData.js checked before API)
 - Namespace: `TOWNSHIP_CANADA` (custom functions prefix)
 - The add-in calls an external API to resolve land descriptions to coordinates
