@@ -5,7 +5,7 @@
  * of selected cells directly from the Excel ribbon.
  */
 
-import { MAX_BATCH_SIZE, apiConvertBatch } from "../shared/config";
+import { apiConvertBatch } from "../shared/config";
 
 /**
  * Ribbon button handler: Convert selected cells.
@@ -36,13 +36,8 @@ async function convertSelectedCells(event) {
         return;
       }
 
-      // Process in batches
-      var allResults = [];
-      for (var batchIdx = 0; batchIdx < queries.length; batchIdx += MAX_BATCH_SIZE) {
-        var chunk = queries.slice(batchIdx, batchIdx + MAX_BATCH_SIZE);
-        var batchResponse = await apiConvertBatch(chunk);
-        allResults = allResults.concat(batchResponse.data);
-      }
+      // One result per query, in query order (apiConvertBatch chunks the requests)
+      var allResults = (await apiConvertBatch(queries)).data;
 
       // Write headers
       var outputCol = range.columnIndex + range.columnCount;
@@ -62,14 +57,10 @@ async function convertSelectedCells(event) {
       }
 
       // Write results
-      var resultIndex = 0;
       for (var rowIdx = 0; rowIdx < rowIndices.length; rowIdx++) {
-        if (resultIndex < allResults.length) {
-          var r = allResults[resultIndex];
-          var outputRange = sheet.getRangeByIndexes(startRow + rowIndices[rowIdx], outputCol, 1, 3);
-          outputRange.values = [[r.latitude || "N/A", r.longitude || "N/A", r.province || "N/A"]];
-          resultIndex++;
-        }
+        var r = allResults[rowIdx];
+        var outputRange = sheet.getRangeByIndexes(startRow + rowIndices[rowIdx], outputCol, 1, 3);
+        outputRange.values = [[r.latitude || "N/A", r.longitude || "N/A", r.province || "N/A"]];
       }
 
       await context.sync();

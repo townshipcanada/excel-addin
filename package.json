@@ -10,7 +10,8 @@
     "validate": "npx office-addin-manifest validate manifest.xml",
     "start": "office-addin-debugging start manifest.xml",
     "stop": "office-addin-debugging stop manifest.xml",
-    "sideload": "office-addin-dev-certs install && office-addin-debugging start manifest.xml desktop"
+    "sideload": "office-addin-dev-certs install && office-addin-debugging start manifest.xml desktop",
+    "test": "node --test test/*.test.mjs"
   },
   "devDependencies": {
     "office-addin-debugging": "^6.0.6",

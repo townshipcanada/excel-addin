@@ -8,7 +8,6 @@
  */
 
 import {
-  MAX_BATCH_SIZE,
   TRIAL_URL,
   getApiKey,
   setApiKey,
@@ -147,13 +146,8 @@ async function convertSelected() {
         return;
       }
 
-      // Process in batches
-      var allResults = [];
-      for (var batchIdx = 0; batchIdx < queries.length; batchIdx += MAX_BATCH_SIZE) {
-        var chunk = queries.slice(batchIdx, batchIdx + MAX_BATCH_SIZE);
-        var batchResponse = await apiConvertBatch(chunk);
-        allResults = allResults.concat(batchResponse.data);
-      }
+      // One result per query, in query order (apiConvertBatch chunks the requests)
+      var allResults = (await apiConvertBatch(queries)).data;
 
       // Write headers in the row above if possible
       var outputCol = range.columnIndex + range.columnCount;
@@ -173,14 +167,10 @@ async function convertSelected() {
       }
 
       // Write results
-      var resultIndex = 0;
       for (var rowIdx = 0; rowIdx < rowIndices.length; rowIdx++) {
-        if (resultIndex < allResults.length) {
-          var r = allResults[resultIndex];
-          var outputRange = sheet.getRangeByIndexes(startRow + rowIndices[rowIdx], outputCol, 1, 3);
-          outputRange.values = [[r.latitude || "N/A", r.longitude || "N/A", r.province || "N/A"]];
-          resultIndex++;
-        }
+        var r = allResults[rowIdx];
+        var outputRange = sheet.getRangeByIndexes(startRow + rowIndices[rowIdx], outputCol, 1, 3);
+        outputRange.values = [[r.latitude || "N/A", r.longitude || "N/A", r.province || "N/A"]];
       }
 
       await context.sync();
@@ -249,13 +239,8 @@ async function convertColumn() {
         return;
       }
 
-      // Process in batches
-      var allResults = [];
-      for (var colBatchIdx = 0; colBatchIdx < queries.length; colBatchIdx += MAX_BATCH_SIZE) {
-        var chunk = queries.slice(colBatchIdx, colBatchIdx + MAX_BATCH_SIZE);
-        var colBatchResponse = await apiConvertBatch(chunk);
-        allResults = allResults.concat(colBatchResponse.data);
-      }
+      // One result per query, in query order (apiConvertBatch chunks the requests)
+      var allResults = (await apiConvertBatch(queries)).data;
 
       // Write headers
       var outputCol = colIndex + 1;
@@ -264,14 +249,10 @@ async function convertColumn() {
       headerRange.format.font.bold = true;
 
       // Write results
-      var resultIndex = 0;
       for (var colRowIdx = 0; colRowIdx < rowIndices.length; colRowIdx++) {
-        if (resultIndex < allResults.length) {
-          var r = allResults[resultIndex];
-          var outputRange = sheet.getRangeByIndexes(rowIndices[colRowIdx] + 1, outputCol, 1, 3);
-          outputRange.values = [[r.latitude || "N/A", r.longitude || "N/A", r.province || "N/A"]];
-          resultIndex++;
-        }
+        var r = allResults[colRowIdx];
+        var outputRange = sheet.getRangeByIndexes(rowIndices[colRowIdx] + 1, outputCol, 1, 3);
+        outputRange.values = [[r.latitude || "N/A", r.longitude || "N/A", r.province || "N/A"]];
       }
 
       await context.sync();
