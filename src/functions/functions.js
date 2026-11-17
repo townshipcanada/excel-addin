@@ -23,10 +23,10 @@ function handleFunctionError(e) {
       return "API key required";
     case "INVALID_API_KEY":
       return "Invalid API key";
-    case "TRIAL_EXPIRED":
-      return "Trial expired";
-    case "TRIAL_LIMIT_REACHED":
-      return "Trial limit reached";
+    case "KEY_NOT_AUTHORIZED":
+      return "API key not valid for this API";
+    case "LIMIT_REACHED":
+      return "Plan limit reached";
     default:
       return "Error: " + e.message;
   }

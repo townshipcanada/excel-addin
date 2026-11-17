@@ -73,61 +73,6 @@ body {
 }
 
 /* Usage bar */
-.usage-bar {
-  background: #f0ebe3;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 16px;
-}
-
-.usage-bar .label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #5a5a5a;
-  margin-bottom: 4px;
-}
-
-.usage-bar .count {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1a3d2e;
-}
-
-.usage-bar .count span {
-  font-size: 13px;
-  font-weight: 400;
-  color: #5a5a5a;
-}
-
-.progress-track {
-  background: #e0dbd3;
-  border-radius: 4px;
-  height: 6px;
-  margin-top: 8px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  background: #4a7c59;
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.3s;
-}
-
-.progress-fill.warning {
-  background: #e8a84d;
-}
-
-.progress-fill.danger {
-  background: #c45d3a;
-}
-
-.progress-fill.unlimited {
-  background: #7fb069;
-  width: 100%;
-}
-
 /* Section titles */
 .section-title {
   font-size: 12px;
@@ -288,18 +233,6 @@ body {
   font-weight: 600;
 }
 
-/* Trial info */
-.trial-info {
-  background: #e8eef5;
-  border: 1px solid #5a8cba;
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin-bottom: 16px;
-  font-size: 12px;
-  color: #1a3d5c;
-  line-height: 1.4;
-}
-
 /* Spinner */
 .spinner {
   display: inline-block;
@@ -384,11 +317,6 @@ body {
 .status-badge.connected {
   background: #e8f5e8;
   color: #1a5c1a;
-}
-
-.status-badge.trial {
-  background: #e8eef5;
-  color: #1a3d5c;
 }
 
 .status-badge.disconnected {
