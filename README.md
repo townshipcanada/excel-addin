@@ -55,10 +55,22 @@ Authentication via `X-API-Key` header (trial or paid key).
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
 | `GET` | `/search/legal-location?location={query}` | Single conversion |
-| `POST` | `/batch/legal-location` | Batch conversion (up to 200 items) |
+| `POST` | `/batch/legal-location` | Batch conversion (up to 100 items per request) |
 | `GET` | `/usage` | Usage quota check |
 
 **Paid keys** (`tc_...`) use `https://developer.townshipcanada.com` with the same endpoint paths.
+
+## Hosting
+
+The add-in is served from `https://townshipcanada.com/integrations/excel/`, the web app's `public/integrations/excel/` folder. Every URL in `manifest.xml` points there, and `npm test` checks that each one exists in `dist/`.
+
+To publish a change:
+
+1. `npm run publish:web` builds and copies `dist/` into `../web/public/integrations/excel/` (set `WEB_DIR` if the web checkout is elsewhere).
+2. Commit that folder in the web repo and merge it to `main`; Vercel deploys it.
+3. Excel picks up the new files on the next load. A manifest change also needs the updated `manifest.xml` resubmitted or redistributed.
+
+`npm run build` makes two passes: the pages (task pane and ribbon commands, with relative asset paths) and a standalone `functions.js` (one classic script, no imports) for the manifest's custom functions script URL. Custom functions run in the shared runtime, so the task pane page also registers them.
 
 ## AppSource Submission
 
