@@ -19,4 +19,4 @@
 - Renamed namespace from `TOWNSHIP` to `TOWNSHIP_CANADA` (commit c570f82)
 - Added CI workflow and LICENSE (commit eae7dc7)
 - Migrated from Webpack to Vite (commit 6085118)
-- Added trial API key auth flow (commit dc78dce)
+- Removed the trial API key flow: Township Canada does not offer trial keys, and its endpoint never existed

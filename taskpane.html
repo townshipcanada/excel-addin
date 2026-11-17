@@ -47,7 +47,7 @@
         style="display: none"
       >
         <h4>API Key Required</h4>
-        <p>Connect a trial or paid API key to start converting legal land descriptions.</p>
+        <p>Connect your Township Canada API key to start converting legal land descriptions.</p>
         <button
           class="btn"
           onclick="switchTab('settings')"
@@ -55,40 +55,6 @@
           Connect API Key
         </button>
       </div>
-
-      <!-- Usage indicator -->
-      <div
-        class="usage-bar"
-        id="usageBar"
-        style="display: none"
-      >
-        <div
-          class="label"
-          id="usageLabel"
-        >
-          API Usage
-        </div>
-        <div
-          class="count"
-          id="usageCount"
-        >
-          <span>Loading...</span>
-        </div>
-        <div class="progress-track">
-          <div
-            class="progress-fill"
-            id="usageProgress"
-            style="width: 0%"
-          ></div>
-        </div>
-      </div>
-
-      <!-- Trial info banner -->
-      <div
-        class="trial-info"
-        id="trialInfo"
-        style="display: none"
-      ></div>
 
       <!-- Batch conversion section -->
       <div class="section-title">Batch Convert</div>
@@ -194,7 +160,7 @@
       class="tab-content"
     >
       <div class="section-title">API Key</div>
-      <p class="help-text">Connect a trial or paid API key to convert legal land descriptions.</p>
+      <p class="help-text">Connect your Township Canada API key to convert legal land descriptions. Get one with an API plan at townshipcanada.com/pricing.</p>
 
       <div
         id="statusBadge"
@@ -217,7 +183,7 @@
         <input
           type="password"
           id="apiKeyInput"
-          placeholder="tc_trial_... or tc_..."
+          placeholder="Your API key"
         />
       </div>
 

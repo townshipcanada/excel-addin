@@ -4,28 +4,23 @@
  * Single source of truth for API URL, storage keys, and common functions
  * used across custom functions, commands, and the task pane.
  *
- * Requires a trial or paid API key. Trial keys can be obtained at:
- * https://townshipcanada.com/api?ref=excel
- *
- * Both trial and paid keys use the same API contract (GeoJSON).
- * Trial keys (tc_trial_...) route to the integration trial endpoint;
- * paid keys route to developer.townshipcanada.com.
+ * Requires a Township Canada API key (an API plan at
+ * https://townshipcanada.com/pricing#api-plans). Requests go to
+ * developer.townshipcanada.com.
  *
  * For offline demo, sample data is checked first (no API key needed).
  */
 
 import { lookupSampleData } from "./sampleData.js";
 
-export var TRIAL_API_BASE_URL = "https://townshipcanada.com/api/integrations/trial";
-export var PAID_API_BASE_URL = "https://developer.townshipcanada.com";
+export var API_BASE_URL = "https://developer.townshipcanada.com";
 // The Batch API rejects requests over 100 items with 413 (api/services/batch).
 export var MAX_BATCH_SIZE = 100;
-export var TRIAL_URL = "https://townshipcanada.com/api?ref=excel";
 
 var STORAGE_KEY_API_KEY = "township_api_key";
 
 /**
- * Get the stored API key (trial or paid).
+ * Get the stored API key.
  * Returns empty string if localStorage is unavailable.
  */
 export function getApiKey() {
@@ -67,18 +62,10 @@ export function hasApiKey() {
 }
 
 /**
- * Check if the stored API key is a trial key.
- * Trial keys use the prefix "tc_trial_".
- */
-export function isTrialKey() {
-  return getApiKey().indexOf("tc_trial_") === 0;
-}
-
-/**
- * Get the appropriate API base URL based on the key type.
+ * Base URL for every API request.
  */
 export function getApiBaseUrl() {
-  return isTrialKey() ? TRIAL_API_BASE_URL : PAID_API_BASE_URL;
+  return API_BASE_URL;
 }
 
 /**
@@ -136,7 +123,7 @@ async function safeParseJson(response) {
 /**
  * Convert a single legal land description via the API.
  * Checks sample data first for offline demo, then falls back to API.
- * Uses GET /search/legal-location -- same contract for trial and paid keys.
+ * Uses GET /search/legal-location.
  */
 export async function apiConvertSingle(query) {
   // Check sample data first (works without an API key)
@@ -163,10 +150,10 @@ export async function apiConvertSingle(query) {
     throw new Error("INVALID_API_KEY");
   }
   if (response.status === 403) {
-    throw new Error("TRIAL_EXPIRED");
+    throw new Error("KEY_NOT_AUTHORIZED");
   }
   if (response.status === 429) {
-    throw new Error("TRIAL_LIMIT_REACHED");
+    throw new Error("LIMIT_REACHED");
   }
   if (!response.ok) {
     var errorBody = await safeParseJson(response);
@@ -231,10 +218,10 @@ async function postBatch(queries) {
     throw new Error("INVALID_API_KEY");
   }
   if (response.status === 403) {
-    throw new Error("TRIAL_EXPIRED");
+    throw new Error("KEY_NOT_AUTHORIZED");
   }
   if (response.status === 429) {
-    throw new Error("TRIAL_LIMIT_REACHED");
+    throw new Error("LIMIT_REACHED");
   }
   if (!response.ok) {
     var errorBody = await safeParseJson(response);
@@ -296,30 +283,9 @@ export async function apiConvertBatch(queries) {
 }
 
 /**
- * Get current usage information for the connected API key.
- * Usage endpoint is only available for trial keys.
+ * Whether an API key is connected. The API has no usage endpoint for keys, so
+ * a key is checked for real on its first request (401 or 403).
  */
 export async function apiGetUsage() {
-  if (!hasApiKey()) {
-    return { plan: "none", apiKeyValid: false };
-  }
-
-  if (!isTrialKey()) {
-    return { plan: "api_key", apiKeyValid: true };
-  }
-
-  try {
-    var response = await fetch(TRIAL_API_BASE_URL + "/usage", {
-      method: "GET",
-      headers: buildHeaders()
-    });
-
-    if (!response.ok) {
-      return { plan: "none", apiKeyValid: false };
-    }
-
-    return (await safeParseJson(response)).data;
-  } catch (e) {
-    return { plan: "none", apiKeyValid: false };
-  }
+  return hasApiKey() ? { plan: "api_key", apiKeyValid: true } : { plan: "none", apiKeyValid: false };
 }

@@ -48,17 +48,16 @@ src/
 
 ## API Endpoints
 
-Authentication via `X-API-Key` header (trial or paid key).
+Authentication via `X-API-Key` header, using a Township Canada API key from an API plan (https://townshipcanada.com/pricing#api-plans). Township Canada does not offer trial keys.
 
-**Trial keys** (`tc_trial_...`) use `https://townshipcanada.com/api/integrations/trial`:
+All requests go to `https://developer.townshipcanada.com`:
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
 | `GET` | `/search/legal-location?location={query}` | Single conversion |
 | `POST` | `/batch/legal-location` | Batch conversion (up to 100 items per request) |
-| `GET` | `/usage` | Usage quota check |
 
-**Paid keys** (`tc_...`) use `https://developer.townshipcanada.com` with the same endpoint paths.
+The 100 sample locations in `src/shared/sampleData.js` work without a key.
 
 ## Hosting
 
