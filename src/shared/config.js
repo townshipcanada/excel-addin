@@ -14,11 +14,12 @@
  * For offline demo, sample data is checked first (no API key needed).
  */
 
-import { lookupSampleData } from "./sampleData";
+import { lookupSampleData } from "./sampleData.js";
 
 export var TRIAL_API_BASE_URL = "https://townshipcanada.com/api/integrations/trial";
 export var PAID_API_BASE_URL = "https://developer.townshipcanada.com";
-export var MAX_BATCH_SIZE = 200;
+// The Batch API rejects requests over 100 items with 413 (api/services/batch).
+export var MAX_BATCH_SIZE = 100;
 export var TRIAL_URL = "https://townshipcanada.com/api?ref=excel";
 
 var STORAGE_KEY_API_KEY = "township_api_key";
@@ -177,9 +178,81 @@ export async function apiConvertSingle(query) {
 }
 
 /**
- * Convert a batch of legal land descriptions via the API.
- * Checks sample data first for each query, then sends remaining to API.
- * Uses POST /batch/legal-location -- same contract for trial and paid keys.
+ * Normalize a description the way the Batch API does before echoing it back
+ * as properties.search_term (api/packages/shared sanitizeLocationInput).
+ */
+function normalizeBatchTerm(query) {
+  return String(query).trim().replace(/['"]/g, "").replace(/[;\\]/g, "");
+}
+
+/**
+ * Match Batch API FeatureCollections back to the queries that produced them.
+ * The API leaves unmatched inputs out of its response, so results are keyed
+ * by search_term instead of by position. Unmatched queries get null values.
+ */
+function matchBatchResults(queries, featureCollections) {
+  var byTerm = {};
+  for (var i = 0; i < featureCollections.length; i++) {
+    var fc = featureCollections[i];
+    var features = (fc && fc.features) || [];
+    for (var j = 0; j < features.length; j++) {
+      var term = features[j].properties && features[j].properties.search_term;
+      if (term) {
+        if (!Object.prototype.hasOwnProperty.call(byTerm, term)) {
+          byTerm[term] = extractFromFeatureCollection(fc);
+        }
+        break;
+      }
+    }
+  }
+
+  return queries.map(function (query) {
+    var key = normalizeBatchTerm(query);
+    if (Object.prototype.hasOwnProperty.call(byTerm, key)) {
+      return byTerm[key];
+    }
+    return { latitude: null, longitude: null, legal_location: null, province: null };
+  });
+}
+
+/**
+ * Send one POST /batch/legal-location request (at most MAX_BATCH_SIZE items).
+ * The API takes a bare JSON array of descriptions and returns a bare JSON
+ * array of GeoJSON FeatureCollections, one per matched input.
+ */
+async function postBatch(queries) {
+  var response = await fetch(getApiBaseUrl() + "/batch/legal-location", {
+    method: "POST",
+    headers: buildHeaders(),
+    body: JSON.stringify(queries)
+  });
+
+  if (response.status === 401) {
+    throw new Error("INVALID_API_KEY");
+  }
+  if (response.status === 403) {
+    throw new Error("TRIAL_EXPIRED");
+  }
+  if (response.status === 429) {
+    throw new Error("TRIAL_LIMIT_REACHED");
+  }
+  if (!response.ok) {
+    var errorBody = await safeParseJson(response);
+    throw new Error(errorBody.message || "Batch API request failed");
+  }
+
+  var body = await safeParseJson(response);
+  if (!Array.isArray(body)) {
+    throw new Error("Unexpected Batch API response");
+  }
+  return body;
+}
+
+/**
+ * Convert any number of legal land descriptions via the Batch API.
+ * Checks sample data first for each query, then sends the rest to the API
+ * in requests of at most MAX_BATCH_SIZE items.
+ * Returns { data } with one flat result per query, in query order.
  */
 export async function apiConvertBatch(queries) {
   // Split queries into sample hits and API-needed
@@ -211,31 +284,12 @@ export async function apiConvertBatch(queries) {
     throw new Error("NO_API_KEY");
   }
 
-  var response = await fetch(getApiBaseUrl() + "/batch/legal-location", {
-    method: "POST",
-    headers: buildHeaders(),
-    body: JSON.stringify({ locations: apiQueries })
-  });
-
-  if (response.status === 401) {
-    throw new Error("INVALID_API_KEY");
-  }
-  if (response.status === 403) {
-    throw new Error("TRIAL_EXPIRED");
-  }
-  if (response.status === 429) {
-    throw new Error("TRIAL_LIMIT_REACHED");
-  }
-  if (!response.ok) {
-    var errorBody = await safeParseJson(response);
-    throw new Error(errorBody.message || "Batch API request failed");
-  }
-
-  var apiResponse = await safeParseJson(response);
-
-  // Merge API results back into the correct positions
-  for (var j = 0; j < apiIndices.length; j++) {
-    results[apiIndices[j]] = apiResponse.data[j];
+  for (var start = 0; start < apiQueries.length; start += MAX_BATCH_SIZE) {
+    var chunk = apiQueries.slice(start, start + MAX_BATCH_SIZE);
+    var matched = matchBatchResults(chunk, await postBatch(chunk));
+    for (var k = 0; k < matched.length; k++) {
+      results[apiIndices[start + k]] = matched[k];
+    }
   }
 
   return { data: results };
