@@ -128,8 +128,12 @@ async function province(lld) {
   }
 }
 
-// Register custom functions with Office
-CustomFunctions.associate("CONVERT", convert);
-CustomFunctions.associate("LAT", lat);
-CustomFunctions.associate("LNG", lng);
-CustomFunctions.associate("PROVINCE", province);
+// Register custom functions with Office. The add-in uses a shared runtime, so
+// this runs inside the task pane page (see manifest.xml). CustomFunctions only
+// exists where Excel provides the custom functions runtime.
+if (typeof CustomFunctions !== "undefined") {
+  CustomFunctions.associate("CONVERT", convert);
+  CustomFunctions.associate("LAT", lat);
+  CustomFunctions.associate("LNG", lng);
+  CustomFunctions.associate("PROVINCE", province);
+}

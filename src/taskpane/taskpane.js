@@ -7,6 +7,8 @@
  * Requires a trial or paid API key.
  */
 
+// Custom functions share this runtime (manifest.xml), so register them here.
+import "../functions/functions.js";
 import {
   TRIAL_URL,
   getApiKey,

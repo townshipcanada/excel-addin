@@ -16,7 +16,8 @@ Microsoft Excel Add-In that converts Canadian legal land descriptions (township/
 - `src/commands/` — Ribbon commands (commands.js)
 - `src/shared/config.js` — Shared configuration (API keys, endpoints)
 - `src/shared/sampleData.js` — 100 hardcoded DLS entries for offline demo
-- `taskpane.html`, `functions.html`, `commands.html` — Entry points
+- `taskpane.html`, `commands.html` — Entry points (custom functions run in the task pane's shared runtime; `functions.js` is also built standalone)
+- Hosted at `townshipcanada.com/integrations/excel/` via the web repo's `public/integrations/excel/` (`npm run publish:web`)
 - `manifest.xml` — Office Add-In manifest
 
 ## Key Commands

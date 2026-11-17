@@ -5,13 +5,14 @@
   "description": "Microsoft Excel Add-In for converting Canadian legal land descriptions to GPS coordinates",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && vite build --config vite.functions.config.js",
     "preview": "vite preview",
     "validate": "npx office-addin-manifest validate manifest.xml",
     "start": "office-addin-debugging start manifest.xml",
     "stop": "office-addin-debugging stop manifest.xml",
     "sideload": "office-addin-dev-certs install && office-addin-debugging start manifest.xml desktop",
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "publish:web": "npm run build && node scripts/publish-to-web.mjs"
   },
   "devDependencies": {
     "office-addin-debugging": "^6.0.6",

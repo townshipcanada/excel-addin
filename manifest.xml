@@ -14,7 +14,7 @@
   <Description DefaultValue="Convert Canadian legal land descriptions (DLS, NTS, Geographic Townships) to GPS coordinates directly in Excel. Supports Alberta, Saskatchewan, Manitoba, British Columbia, and Ontario." />
   <IconUrl DefaultValue="https://townshipcanada.com/integrations/excel/assets/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://townshipcanada.com/integrations/excel/assets/icon-64.png" />
-  <SupportUrl DefaultValue="https://townshipcanada.com/support" />
+  <SupportUrl DefaultValue="https://townshipcanada.com/contact-us" />
 
   <AppDomains>
     <AppDomain>https://townshipcanada.com</AppDomain>
@@ -50,7 +50,7 @@
               <SourceLocation resid="Functions.Script.Url" />
             </Script>
             <Page>
-              <SourceLocation resid="Functions.Page.Url" />
+              <SourceLocation resid="Taskpane.Url" />
             </Page>
             <Metadata>
               <SourceLocation resid="Functions.Metadata.Url" />
@@ -127,11 +127,10 @@
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Functions.Script.Url" DefaultValue="https://townshipcanada.com/integrations/excel/functions.js" />
-        <bt:Url id="Functions.Page.Url" DefaultValue="https://townshipcanada.com/integrations/excel/functions.html" />
         <bt:Url id="Functions.Metadata.Url" DefaultValue="https://townshipcanada.com/integrations/excel/functions.json" />
         <bt:Url id="Taskpane.Url" DefaultValue="https://townshipcanada.com/integrations/excel/taskpane.html" />
         <bt:Url id="Commands.Url" DefaultValue="https://townshipcanada.com/integrations/excel/commands.html" />
-        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://townshipcanada.com/integrations/excel" />
+        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://townshipcanada.com/guides/api-integration" />
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Functions.Namespace" DefaultValue="TOWNSHIP_CANADA" />
