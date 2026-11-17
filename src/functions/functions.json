@@ -3,7 +3,7 @@
   "functions": [
     {
       "description": "Convert a Canadian legal land description to GPS coordinates. Returns \"latitude, longitude\".",
-      "helpUrl": "https://townshipcanada.com/integrations/excel",
+      "helpUrl": "https://townshipcanada.com/guides/api-integration",
       "id": "CONVERT",
       "name": "CONVERT",
       "parameters": [
@@ -19,7 +19,7 @@
     },
     {
       "description": "Convert a legal land description and return only the latitude.",
-      "helpUrl": "https://townshipcanada.com/integrations/excel",
+      "helpUrl": "https://townshipcanada.com/guides/api-integration",
       "id": "LAT",
       "name": "LAT",
       "parameters": [
@@ -35,7 +35,7 @@
     },
     {
       "description": "Convert a legal land description and return only the longitude.",
-      "helpUrl": "https://townshipcanada.com/integrations/excel",
+      "helpUrl": "https://townshipcanada.com/guides/api-integration",
       "id": "LNG",
       "name": "LNG",
       "parameters": [
@@ -51,7 +51,7 @@
     },
     {
       "description": "Convert a legal land description and return the province name.",
-      "helpUrl": "https://townshipcanada.com/integrations/excel",
+      "helpUrl": "https://townshipcanada.com/guides/api-integration",
       "id": "PROVINCE",
       "name": "PROVINCE",
       "parameters": [
